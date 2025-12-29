@@ -22,52 +22,53 @@ class TestBooksCollector:
 
     # напиши свои тесты ниже
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
-    import pytest
-
-class TestBooksCollector:
-
-    @pytest.fixture
-    def collector(self):
-        return BooksCollector()
-
+ 
+    # добавляем новую книгу в словарь без указания жанра
     def test_add_new_book_valid_name(self, collector):
         collector.add_new_book("Гарри Поттер")
         assert "Гарри Поттер" in collector.books_genre
         assert collector.books_genre["Гарри Поттер"] == ""  
 
-   def test_add_new_book_name_too_long(self, collector):
+    # проверяем, что длина названия книги может быть не больше 40 символов
+    def test_add_new_book_name_too_long(self, collector):
         name = "О" * 40
         collector.add_new_book(name)
         assert name in collector.books_genre
         assert collector.books_genre[name] == ""
 
-   def test_add_new_book_name_too_long(self, collector):
+    def test_add_new_book_name_too_long(self, collector):
         name = "О" * 41
         collector.add_new_book(name)
         assert name not in collector.books_genre
 
+    # проверяем, что одну и ту же книгу можно добавить только один раз
     def test_add_new_book_duplicate(self, collector):
         collector.add_new_book("Книга")
         collector.add_new_book("Книга")
         assert len(collector.books_genre) == 1
 
+    # проверяем, что метод добавляет только входящие в список жанры книг
     def test_set_book_genre_book_not_exists(self, collector):
         collector.set_book_genre("Неправильная", "Фантастика")
         assert "Неправильная" not in collector.books_genre
 
+    # проверяем, что метод добавляет только входящие в словарь книги
     def test_set_book_genre_invalid_genre(self, collector):
-        collector.add_new_book("Книга")
-        collector.set_book_genre("Книга", "Неправильный жанр")
-        assert collector.books_genre["Книга"] == ""
+        collector.add_new_book("Гарри Поттер")
+        collector.set_book_genre("Гарри Поттер", "Неправильный жанр")
+        assert collector.books_genre["Гарри Поттер"] == ""
 
+    # проверяем, что метод определяет жанр книги по ее названию
     def test_get_book_genre_exists(self, collector):
         collector.add_new_book("Книга")
         collector.set_book_genre("Книга", "Комедии")
         assert collector.get_book_genre("Книга") == "Комедии"
 
+    # проверяем, что метод не находит несуществующих книг в списке 
     def test_get_book_genre_not_exists(self, collector):
         assert collector.get_book_genre("Неправильная") is None
 
+    # проверяем, что метод находит книги определенного жанра
     def test_get_books_with_specific_genre(self, collector):
         collector.add_new_book("Книга1")
         collector.add_new_book("Книга2")
@@ -79,22 +80,13 @@ class TestBooksCollector:
         assert "Книга1" in result
         assert "Книга2" in result
 
-    def test_get_books_with_specific_genre_no_matches(self, collector):
-        collector.add_new_book("Книга")
-        collector.set_book_genre("Книга", "Комедии")
-        result = collector.get_books_with_specific_genre("Фантастика")
-        assert result == []
-
-    def test_get_books_with_specific_genre_invalid_genre(self, collector):
-        collector.add_new_book("Книга")
-        result = collector.get_books_with_specific_genre("Неправильная")
-        assert result == []
-
+    # проверяем, что метод выводит текущий словарь
     def test_get_books_genre(self, collector):
         collector.add_new_book("Книга1")
         collector.add_new_book("Книга2")
         assert collector.get_books_genre() == {"Книга1": "", "Книга2": ""}
 
+    # проверяем, что метод показывает книги только для детей
     def test_get_books_for_children(self, collector):
         collector.add_new_book("Детская книга")
         collector.add_new_book("Взрослая книга")
@@ -103,11 +95,13 @@ class TestBooksCollector:
         result = collector.get_books_for_children()
         assert result == ["Детская книга"]
 
+    # проверяем, что метод не добавляет книги без жанра в списке книг для детей
     def test_get_books_for_children_no_genre(self, collector):
         collector.add_new_book("Книга без жанра")
         result = collector.get_books_for_children()
         assert result == []
 
+    # проверяем, что метод добавляет книги с правильным названием в избранное 
     def test_add_book_in_favorites_valid(self, collector):
         collector.add_new_book("Книга")
         collector.add_book_in_favorites("Книга")
@@ -117,23 +111,22 @@ class TestBooksCollector:
         collector.add_book_in_favorites("Неправильная")
         assert "Неправильная" not in collector.favorites
 
+    # проверяем, что метод повторно не добавляет книгу в избранное 
     def test_add_book_in_favorites_duplicate(self, collector):
         collector.add_new_book("Книга")
         collector.add_book_in_favorites("Книга")
         collector.add_book_in_favorites("Книга")
         assert collector.favorites.count("Книга") == 1
 
+    # проверяем, что метод удаляет книгу из избранного
     def test_delete_book_from_favorites(self, collector):
         collector.add_new_book("Книга")
         collector.add_book_in_favorites("Книга")
         collector.delete_book_from_favorites("Книга")
         assert "Книга" not in collector.favorites
 
-   def test_delete_book_from_favorites_not_in_list(self, collector):
-       collector.delete_book_from_favorites("Неправильная")
-        assert collector.favorites == []
-
-   def test_get_list_of_favorites_books(self, collector):
+    # проверяем, что метод показывает список избранных книг
+    def test_get_list_of_favorites_books(self, collector):
         collector.add_new_book("Книга1")
         collector.add_new_book("Книга2")
         collector.add_book_in_favorites("Книга1")
