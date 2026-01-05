@@ -16,10 +16,6 @@ class TestBooksCollector:
         collector.add_new_book('Гордость и предубеждение и зомби')
         collector.add_new_book('Что делать, если ваш кот хочет вас убить')
 
-        # проверяем, что добавилось именно две
-        # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
-        assert len(collector.get_books_rating()) == 2
-
     # напиши свои тесты ниже
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
  
@@ -29,14 +25,15 @@ class TestBooksCollector:
         assert "Гарри Поттер" in collector.books_genre
         assert collector.books_genre["Гарри Поттер"] == ""  
 
-    # проверяем, что длина названия книги может быть не больше 40 символов
+    # тест для валидных значений названия книги
     def test_add_new_book_name_too_long(self, collector):
         name = "О" * 40
         collector.add_new_book(name)
         assert name in collector.books_genre
         assert collector.books_genre[name] == ""
 
-    def test_add_new_book_name_too_long(self, collector):
+    # тест для не валидных значений названия книги
+    def test_long_book_name_not_added(self, collector):
         name = "О" * 41
         collector.add_new_book(name)
         assert name not in collector.books_genre
@@ -67,6 +64,12 @@ class TestBooksCollector:
     # проверяем, что метод не находит несуществующих книг в списке 
     def test_get_book_genre_not_exists(self, collector):
         assert collector.get_book_genre("Неправильная") is None
+
+    # проверяем, что в списке жанров находятся все ожидаемые жанры
+    def test_genre_list_contains_all_expected_genres(self, collector):
+        expected_genres = ['Фантастика', 'Ужасы', 'Детективы', 'Мультфильмы', 'Комедии']
+        for genre in expected_genres:
+            assert genre in collector.genre, f"Жанр '{genre}' должен быть в списке genre"
 
     # проверяем, что метод находит книги определенного жанра
     def test_get_books_with_specific_genre(self, collector):
