@@ -1,4 +1,7 @@
+import pytest 
+
 from main import BooksCollector
+from test_data import SYMBOL
 
 # класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
 # обязательно указывать префикс Test
@@ -19,24 +22,19 @@ class TestBooksCollector:
     # напиши свои тесты ниже
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
  
+    @pytest.mark.usefixtures("collector")
+    
     # добавляем новую книгу в словарь без указания жанра
     def test_add_new_book_valid_name(self, collector):
         collector.add_new_book("Гарри Поттер")
         assert "Гарри Поттер" in collector.books_genre
         assert collector.books_genre["Гарри Поттер"] == ""  
 
-    # тест для валидных значений названия книги
-    def test_add_new_book_name_too_long(self, collector):
-        name = "О" * 40
-        collector.add_new_book(name)
-        assert name in collector.books_genre
-        assert collector.books_genre[name] == ""
-
-    # тест для не валидных значений названия книги
-    def test_long_book_name_not_added(self, collector):
-        name = "О" * 41
-        collector.add_new_book(name)
-        assert name not in collector.books_genre
+    # Параметризованный тест для проверки граничных значений длины названия
+    @pytest.mark.parametrize("name, expected", SYMBOL)
+    def test_add_new_book_name_length_boundaries(collector, name, expected):
+       collector.add_new_book(name)
+       assert (name in collector.books_genre) == expected
 
     # проверяем, что одну и ту же книгу можно добавить только один раз
     def test_add_new_book_duplicate(self, collector):
