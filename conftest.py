@@ -1,7 +1,6 @@
 import pytest 
 
-from main import BooksCollector
-from tests import TestBooksCollector
+from bookscollector import BooksCollector
 
 # Фикстура создает новый экземпляр BooksCollector перед каждым тестом
 @pytest.fixture(scope="class")
